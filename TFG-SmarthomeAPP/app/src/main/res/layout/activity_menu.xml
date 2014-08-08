@@ -1,0 +1,44 @@
+<LinearLayout
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:weightSum="1">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/logo_upv"
+        android:layout_weight="0.23" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/tfg_title"
+        android:id="@+id/tv_tfg" />
+
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        style="@style/btnStyleSeagull"
+        android:text="@string/init_app" />
+
+    <Button
+        android:id="@+id/btn_exit"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_margin="20dp"
+        style="@style/btnStyleSeagull"
+        android:text="@string/exit_app"/>
+
+
+
+</LinearLayout>

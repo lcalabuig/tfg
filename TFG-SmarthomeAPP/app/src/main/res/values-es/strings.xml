@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- strings.xml file for devices that use Spanish language -->
+
+<resources>
+
+    <string name="app_name">TFG-SmarthomeApp</string>
+    <string name="init_app">Iniciar Aplicación</string>
+    <string name="exit_app">Salir</string>
+    <string name="tfg_title">TFG - Introducción de aspectos de geolocalicación en una vivienda inteligente</string>
+    <string name="about_text">Esta aplicación ha sido desarrollada como parte del Trabajo de Final de
+    Grado de "Introducción a aspectos de geolocalización en una vivienda inteligente"</string>
+    <string name="author">Autor: Lorena Calabuig Monerris</string>
+    <string name="tutor">Tutor: Joan Josep Fons Cors</string>
+    <string name="ip">IP pública</string>
+    <string name="about">Acerca de</string>
+
+    <!-- Strings for LoginActivity -->
+    <string name="title_activity_login">Registro</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="register">Registrarse</string>
+
+
+</resources>
