@@ -1,8 +1,6 @@
 package upv.locamo.tfg.smarthome.app;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -16,7 +14,6 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -26,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutionException;
+
+import upv.locamo.tfg.smarthome.app.utils.Utils;
 
 
 public class LoginActivity extends ActionBarActivity {
@@ -99,10 +98,7 @@ public class LoginActivity extends ActionBarActivity {
     private void updateSharedPreferences(){
 
         Log.e("!!!!INFO", "Entro en updateSharedPreferences()");
-        SharedPreferences prefs = getSharedPreferences("tfg_preferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("username", user);
-        editor.commit();
+        Utils.setUser(getApplicationContext(), user);
     }
 
     /**

@@ -14,6 +14,8 @@
     <string name="tutor">Tutor: Joan Josep Fons Cors</string>
     <string name="ip">IP pública</string>
     <string name="about">Acerca de</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="gps">Por favor, activa el GPS</string>
 
     <!-- Strings for LoginActivity -->
     <string name="title_activity_login">Registro</string>

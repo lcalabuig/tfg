@@ -24,4 +24,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/org.restlet.ext.json.jar')
     compile files('libs/org.restlet.jar')
+    compile files('libs/org.restlet.ext.nio.jar')
 }

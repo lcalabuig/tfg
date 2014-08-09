@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import upv.locamo.tfg.smarthome.app.utils.Utils;
+
 
 public class LogoutActivity extends ActionBarActivity {
 
@@ -15,17 +17,11 @@ public class LogoutActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Delete the current user from the Shared Preferences
-        updateSharedPreferences();
+        Utils.deleteCurrentUser(getApplicationContext());
 
         Intent menuActivity = new Intent(LogoutActivity.this, MenuActivity.class);
         startActivity(menuActivity);
 
     }
 
-    private void updateSharedPreferences(){
-        SharedPreferences prefs = getSharedPreferences("tfg_preferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("username", "user");
-        editor.commit();
-    }
 }
