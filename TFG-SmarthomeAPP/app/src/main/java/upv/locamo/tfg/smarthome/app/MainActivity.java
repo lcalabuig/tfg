@@ -1,71 +1,88 @@
 package upv.locamo.tfg.smarthome.app;
 
+
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.restlet.Component;
-import org.restlet.Server;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.engine.Engine;
-import org.restlet.ext.nio.*;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
-import java.io.IOException;
-import java.util.logging.Level;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import upv.locamo.tfg.smarthome.app.restletClient.DeviceIP;
-import upv.locamo.tfg.smarthome.app.restletServer.AndroidServerApplication;
+import upv.locamo.tfg.smarthome.app.restlet.DeviceIP;
+import upv.locamo.tfg.smarthome.app.restlet.DevicePosition;
 import upv.locamo.tfg.smarthome.app.utils.Utils;
 
 
 public class MainActivity extends ActionBarActivity {
-    private Component component;
+    private String ip;
+    private String user;
+    private static Context context;
+
+    //GPS status
+    boolean isGPSEnabled = false;
+    //Network status
+    boolean isNetworkEnabled = false;
+
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private Location location = null;
+    private double longitude;
+    private double latitude;
+    private float accuracy;
+    private long time;
+
     private TextView tv_ip;
-    private TextView tv_result;
-    private Button btn_getResource;
+    public static TextView tv_longitude;
+    public static TextView tv_latitude;
+    public static TextView tv_accuracy;
+    public static TextView tv_date;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tv_ip = (TextView) findViewById(R.id.tv_ip);
-        tv_result = (TextView) findViewById(R.id.tv_result);
-        btn_getResource = (Button) findViewById(R.id.btn_getResource);
-        System.setProperty("java.net.preferIPv6Addresses","false");
 
-        Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
-        Engine.setLogLevel(Level.FINEST);
-        Log.e("!!!!INFO", "Modificado Engine)");
+        tv_ip = (TextView) findViewById(R.id.tv_ip);
+        tv_longitude = (TextView) findViewById(R.id.tv_longitude);
+        tv_latitude = (TextView) findViewById(R.id.tv_latitude);
+        tv_accuracy = (TextView) findViewById(R.id.tv_accuracy);
+        tv_date = (TextView) findViewById(R.id.tv_date);
+
+        context = getApplicationContext();
+        System.setProperty("java.net.preferIPv6Addresses","false");
+        //
+        // getConnectionsEnabled();
 
         //Obtain the IP and send it to the Rest Server
         sendIPtoServer();
-        Log.e("!!!!INFO", "Después de sendIPtoServer()");
+        tv_ip.setText(ip);
 
-        //Create a server to send the position
-        initServer();
-        makeCallToServer();
-        /*
-        btn_getResource.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        getCurrentLocation();
 
 
-               //Toast.makeText(getApplicationContext(), "Please enter a valid username/password", Toast.LENGTH_SHORT).show();
+    }
 
-            }
-        });
-        */
+    public static Context getContext(){
+        return context;
     }
 
 
@@ -93,73 +110,96 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-
     private void sendIPtoServer(){
         DeviceIP deviceIP = new DeviceIP();
         deviceIP.obtainIPAddress();
-        tv_ip.setText(deviceIP.getLocalIP());
-        String user = Utils.getUser(getApplicationContext());
+        ip = deviceIP.getLocalIP();
+        user = Utils.getUser(getApplicationContext());
         deviceIP.setUser(user);
         deviceIP.sendIPToServer();
     }
 
-    private void initServer(){
-        Log.e("!!!!INFO", "Entro en InitServer");
-        InitServerTask initServerTask = new InitServerTask();
-        initServerTask.execute();
-        Log.e("!!!!INFO", "Salgo de InitServer");
+    public void getCurrentLocation() {
+        locationManager = (LocationManager) MainActivity.getContext().getSystemService(Context.LOCATION_SERVICE);
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        Log.e("!!!!!INFO", "Entro en getCurrentLocation");
+        Log.e("!!!!!INFO", "La hora en la que entra es " + getTimeFormatted(System.currentTimeMillis()));
+
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location l) {
+                location = l;
+                longitude = l.getLongitude();
+                latitude = l.getLatitude();
+                accuracy = l.getAccuracy();
+                time = l.getTime();
+                tv_longitude.setText("Longitude: " + longitude);
+                tv_latitude.setText("Latitude: " + latitude);
+                tv_accuracy.setText("Accuracy: " + accuracy);
+                tv_date.setText("Date: " + getTimeFormatted(time));
+
+                String loc = Double.toString(longitude) + " - " + Double.toString(latitude) + " - " + Float.toString(accuracy) + " - " + getTimeFormatted(time);
+                Log.e("!!!INFO", loc);
+
+                SendPositionToServerTask sendPositionToServerTask = new SendPositionToServerTask();
+                sendPositionToServerTask.execute(createJSONLocation());
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+        };
+
+        if (isGPSEnabled)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
+
+        if (isNetworkEnabled)
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 0, locationListener);
+
     }
 
-    public class InitServerTask extends AsyncTask<Void, Void, Void> {
+    private JSONObject createJSONLocation() {
+        Log.e("Restlet", "Acceding to Device Position Resource.");
+        try {
+            JSONArray jsonLocation = new JSONArray();
+            JSONObject jsonObjLocation = new JSONObject();
+            jsonObjLocation.put("longitude", longitude);
+            jsonObjLocation.put("latitude", latitude);
+            jsonObjLocation.put("accuracy", accuracy);
+            jsonObjLocation.put("time", time);
+            jsonLocation.put(jsonObjLocation);
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            Log.e("!!!!INFO", "Entro en InitServerTask - doInBackground");
-            try {
-                component = new Component();
-                Log.e("!!!!INFO", "new Component()");
-                final Server connector = component.getServers().add(Protocol.HTTP, 8080); //Probar Configurations.localPort
-                Log.e("!!!!INFO", "Creado el connector");
-                component.getDefaultHost().attach(new AndroidServerApplication(getApplicationContext()));
-                Log.e("!!!!INFO", "Se añade el AndroidServerApplication");
-                connector.start();
-                Log.i("!!!!INFO", "Se inicia el conector");
-            } catch (Exception e) {
-                Log.e("!!!!ERROR", "Wystąpił błąd podczas uruchamiania usługi");
-            }
-            Log.e("!!!!INFO", "Salgo de InitServerTask - doInBackground");
+            JSONObject jsonResult = new JSONObject();
+            jsonResult.put("location", jsonLocation);
+
+            return jsonResult;
+        } catch (JSONException e) {
+            e.printStackTrace();
             return null;
         }
     }
 
-    private void makeCallToServer(){
-        Log.e("!!!!INFO", "Entro en InitServer");
-        MakeCallToServerTask makeCallToServerTask = new MakeCallToServerTask();
-        makeCallToServerTask.execute();
-        Log.e("!!!!INFO", "Salgo de InitServer");
-    }
-
-    public class MakeCallToServerTask extends AsyncTask<Void, Void, Void> {
-
+    public class SendPositionToServerTask extends AsyncTask<JSONObject, Void, Void> {
         @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                ClientResource clientResource = new ClientResource(Method.GET, "http://localhost:8080/");
-                Representation objectRepresentation = clientResource.get();
-                final String result = objectRepresentation.getText().toString();
-                Log.e("!!!INFO",result);
-                runOnUiThread(new Runnable(){
-                    public void run(){
-                        tv_result.setText(result);
-                    }
-                });
-            } catch (IOException e) {
-                Log.e("!!!ERROR", "Error producido al leer del servidor android");
-            }
+        protected Void doInBackground(JSONObject... jsonObjs) {
+            Log.d("!!!INFO", "Entro por SendPositionToServer task");
+            ClientResource resource = new ClientResource("http://locamo.no-ip.org:8284/users/" + user);
+            Representation obj = new JsonRepresentation(jsonObjs[0]);
+            resource.put(obj);
 
             return null;
         }
     }
 
+    public static String getTimeFormatted(long x){
+        Date d = new Date(x);
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        return format.format(d);
+    }
 
 }

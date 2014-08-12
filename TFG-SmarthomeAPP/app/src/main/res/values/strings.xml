@@ -2,24 +2,30 @@
 <!-- strings.xml file for devices that use English language -->
 <resources>
 
-    <string name="app_name">TFG-SmarthomeApp</string>
+    <string name="app_name">My SmartHome</string>
+
+    <!-- Strings for MenuActivity -->
     <string name="init_app">Start Application</string>
     <string name="exit_app">Exit</string>
-    <string name="tfg_title">FPW - Introducing aspects of geolocation in a smarthome</string>
-    <string name="about">About us</string>
-    <string name="logout">Log out</string>
-    <string name="about_text"></string>
-    <string name="author">Author: Lorena Calabuig Monerris</string>
-    <string name="tutor">Tutor: Joan Josep Fons Cors</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="tfg_title">FDW - Introducing aspects of geolocation in a smarthome</string>
+
+    <!-- Strings for MainActivity -->
     <string name="gps">Please, enable the GPS</string>
 
 
-    <!-- Strings for LoginActivity -->
+    <!-- Strings for Login/LogoutActivity -->
     <string name="title_activity_login">Register</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="register">Register</string>
     <string name="title_activity_logout">LogoutActivity</string>
+    <string name="logout">Log out</string>
+
+    <!-- Strings for AboutUsActivity -->
+    <string name="about">About us</string>
+    <string name="about_text">This application have been developed as part of the Final Degree Work of
+    "Introducing aspects of geolocation in a smarthome"</string>
+    <string name="author">Author: Lorena Calabuig Monerris</string>
+    <string name="tutor">Tutor: Joan Josep Fons Cors</string>
 
 </resources>

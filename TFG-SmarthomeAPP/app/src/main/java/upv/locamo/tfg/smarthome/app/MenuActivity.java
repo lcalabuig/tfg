@@ -72,7 +72,7 @@ public class MenuActivity extends ActionBarActivity {
             Intent addIntent = new Intent();
             addIntent
                     .putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "TFG-SmarthomeApp");
+            addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "My SmartHome");
             addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
                     Intent.ShortcutIconResource.fromContext(getApplicationContext(),
                             R.drawable.ic_launcher)

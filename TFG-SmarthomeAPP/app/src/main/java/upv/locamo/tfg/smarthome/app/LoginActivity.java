@@ -1,5 +1,7 @@
 package upv.locamo.tfg.smarthome.app;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -34,7 +36,7 @@ public class LoginActivity extends ActionBarActivity {
     EditText et_pass;
     String user;
     String pass;
-    String url = "http://locamo.no-ip.org/iplist/";
+    String url = "http://locamo.no-ip.org:8284/users/";
 
     private static final int PREFERENCE_MODE_PRIVATE = 0;
 
@@ -51,17 +53,17 @@ public class LoginActivity extends ActionBarActivity {
             public void onClick(View v) {
                 user = et_user.getText().toString();
                 pass = et_pass.getText().toString();
+                //VERIRY INTERNET CONNECTION
+                //if ()
                 if (!user.matches("") && !pass.matches("")) {
                     sendUserToServer();
                     if (ifUserIsAdded()) {
                         updateSharedPreferences();
                         goToMainActivity();
-                    }
-                    else {
+                    } else {
                         Toast.makeText(getApplicationContext(), "Please enter a valid username/password", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
+                } else {
                     Toast.makeText(getApplicationContext(), "Please enter a valid username/password", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -89,48 +91,77 @@ public class LoginActivity extends ActionBarActivity {
     }
 
 
-    private void goToMainActivity(){
-        Log.e("!!!!INFO", "Entro en goToMainActivity()");
+    private void goToMainActivity() {
         Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(mainActivity);
     }
 
-    private void updateSharedPreferences(){
-
-        Log.e("!!!!INFO", "Entro en updateSharedPreferences()");
+    private void updateSharedPreferences() {
         Utils.setUser(getApplicationContext(), user);
     }
 
     /**
      * Method called on onCreate() that calls the corresponding AsyncTask to send the public IP
      */
-    public void sendUserToServer(){
-        Log.e("!!!!INFO", "Entro en sendUserToServer()");
+    public void sendUserToServer() {
         if (!userExists()) {
-            SendUsertoServerTask sendUsertoServerTask = new SendUsertoServerTask();
+            SendUserToServerTask sendUsertoServerTask = new SendUserToServerTask();
             sendUsertoServerTask.execute();
         }
     }
 
     /**
-     * AsyncTask for send to server the new user
+     * AsyncTask for send the new user to server
      */
-    private class SendUsertoServerTask extends AsyncTask<Void, Void, Void> {
+    private class SendUserToServerTask extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            /*progressDialog = new ProgressDialog(LoginActivity.this);
+            progressDialog.setTitle("Connecting with server");
+            progressDialog.setMessage("Please wait");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();*/
+        }
+
         @Override
         protected Void doInBackground(Void... params) {
             ClientResource resource = new ClientResource(url);
-                try {
-                    JSONObject jsonSend = new JSONObject();
-                    jsonSend.put("userID", user);
-                    jsonSend.put("ip", "null");
-                    jsonSend.put("pass", pass);
-                    Representation obj = new JsonRepresentation(jsonSend);
-                    resource.put(obj);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            try {
+                JSONObject jsonSend = new JSONObject();
+                jsonSend.put("userID", user);
+                jsonSend.put("ip", "null");
+                jsonSend.put("pass", pass);
+                Representation obj = new JsonRepresentation(jsonSend);
+                resource.put(obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            //progressDialog.dismiss();
+        }
+    }
+
+    private boolean userExists() {
+        boolean retval = false;
+        try {
+            CheckIfUserExistsTask checkIfUserExistsTask = new CheckIfUserExistsTask();
+            Log.e("!!!INFO", "La url es: " + url + user);
+            retval = checkIfUserExistsTask.execute(url + user).get();
+            Log.e("!!!INFO", "El usuario existe? " + Boolean.toString(retval));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return retval;
     }
 
     /**
@@ -147,8 +178,7 @@ public class LoginActivity extends ActionBarActivity {
                 int code = httpConnection.getResponseCode();
                 if (code != 200) {
                     return false;
-                }
-                else {
+                } else {
                     return true;
                 }
             } catch (IOException e) {
@@ -159,20 +189,7 @@ public class LoginActivity extends ActionBarActivity {
 
     }
 
-    private boolean userExists() {
-        boolean retval = false;
-        try {
-            CheckIfUserExistsTask checkIfUserExistsTask = new CheckIfUserExistsTask();
-            retval = checkIfUserExistsTask.execute(url+user).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return retval;
-    }
-
-    private boolean ifUserIsAdded(){
+    private boolean ifUserIsAdded() {
         return userExists();
     }
 

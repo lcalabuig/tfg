@@ -1,8 +1,8 @@
-package upv.locamo.tfg.smarthome.app.restletClient;
+package upv.locamo.tfg.smarthome.app.restlet;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 
+import upv.locamo.tfg.smarthome.app.MainActivity;
 
 
 public class DeviceIP {
@@ -109,7 +110,12 @@ public class DeviceIP {
         @Override
         protected void onPostExecute(JSONObject json) {
             try {
-                localIP = json.getString("ip");
+                if (json.getString("ip") != null)
+                    localIP = json.getString("ip");
+                else {
+                    localIP = null;
+                    Toast.makeText(MainActivity.getContext(), "You don't have good Internet connection", Toast.LENGTH_SHORT).show();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -131,7 +137,7 @@ public class DeviceIP {
         @Override
         protected Void doInBackground(Void... params) {
 
-            ClientResource resource = new ClientResource("http://locamo.no-ip.org/iplist/" + user);
+            ClientResource resource = new ClientResource("http://locamo.no-ip.org:8284/users/" + user);
             try {
                 JSONObject jsonSend = new JSONObject();
                 jsonSend.put("ip", localIP);
