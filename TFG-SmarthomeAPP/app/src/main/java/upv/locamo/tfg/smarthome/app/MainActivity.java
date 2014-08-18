@@ -4,27 +4,11 @@ package upv.locamo.tfg.smarthome.app;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import upv.locamo.tfg.smarthome.app.restlet.DeviceIP;
 import upv.locamo.tfg.smarthome.app.restlet.DevicePosition;
@@ -36,18 +20,7 @@ public class MainActivity extends ActionBarActivity {
     private String user;
     private static Context context;
 
-    //GPS status
-    boolean isGPSEnabled = false;
-    //Network status
-    boolean isNetworkEnabled = false;
-
-    private LocationManager locationManager;
-    private LocationListener locationListener;
     private Location location = null;
-    private double longitude;
-    private double latitude;
-    private float accuracy;
-    private long time;
 
     private TextView tv_ip;
     public static TextView tv_longitude;
@@ -69,15 +42,20 @@ public class MainActivity extends ActionBarActivity {
 
         context = getApplicationContext();
         System.setProperty("java.net.preferIPv6Addresses","false");
-        //
-        // getConnectionsEnabled();
 
         //Obtain the IP and send it to the Rest Server
         sendIPtoServer();
         tv_ip.setText(ip);
 
         getCurrentLocation();
-
+        /*
+        if (location != null) {
+            tv_longitude.setText("Longitude: " + location.getLongitude());
+            tv_latitude.setText("Latitude: " + location.getLatitude());
+            tv_accuracy.setText("Accuracy: " + location.getAccuracy());
+            tv_date.setText("Date: " + DevicePosition.getTimeFormatted(location.getTime()));
+        }
+        */
 
     }
 
@@ -119,6 +97,12 @@ public class MainActivity extends ActionBarActivity {
         deviceIP.sendIPToServer();
     }
 
+    private void getCurrentLocation(){
+        DevicePosition devicePosition = new DevicePosition();
+        devicePosition.getCurrentLocation();
+        location = devicePosition.getLocation();
+    }
+/*
     public void getCurrentLocation() {
         locationManager = (LocationManager) MainActivity.getContext().getSystemService(Context.LOCATION_SERVICE);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -128,7 +112,7 @@ public class MainActivity extends ActionBarActivity {
 
         locationListener = new LocationListener() {
             public void onLocationChanged(Location l) {
-                location = l;
+                //location = l;
                 longitude = l.getLongitude();
                 latitude = l.getLatitude();
                 accuracy = l.getAccuracy();
@@ -156,10 +140,10 @@ public class MainActivity extends ActionBarActivity {
         };
 
         if (isGPSEnabled)
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, TimeUnit.MINUTES.toMillis(2), 0, locationListener);
 
         if (isNetworkEnabled)
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TimeUnit.MINUTES.toMillis(2), 0, locationListener);
 
     }
 
@@ -196,10 +180,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public static String getTimeFormatted(long x){
-        Date d = new Date(x);
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return format.format(d);
-    }
+*/
+
 
 }

@@ -2,6 +2,8 @@ package upv.locamo.tfg.smarthome.app.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.io.File;
@@ -41,4 +43,16 @@ public class Utils {
         editor.commit();
     }
 
+    public static boolean checkWifiConnection(Context context) {
+        ConnectivityManager conectManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (conectManager != null) {
+            NetworkInfo wifiConection = conectManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wifiConection != null
+                    && wifiConection.isAvailable()
+                    && wifiConection.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -18,6 +18,11 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import upv.locamo.tfg.smarthome.app.MainActivity;
 import upv.locamo.tfg.smarthome.app.utils.Utils;
 
@@ -26,11 +31,12 @@ public class DevicePosition {
     private static LocationManager locationManager;
     private static LocationListener locationListener;
     public static Location location = null;
-    public static Location locationOld = null;
     public static double longitude;
     public static double latitude;
     public static float accuracy;
     public static long time;
+
+    private double minTime = TimeUnit.MINUTES.toMillis(2);
 
     // flag for GPS status
     static boolean isGPSEnabled = false;
@@ -41,7 +47,7 @@ public class DevicePosition {
 
 
 
-    private static JSONObject createJSONLocation() {
+    private JSONObject createJSONLocation() {
         Log.e("Restlet", "Acceding to Device Position Resource.");
         try {
             JSONArray jsonLocation = new JSONArray();
@@ -61,10 +67,16 @@ public class DevicePosition {
             return null;
         }
     }
-
-    public static void getCurrentLocation(long minTime) {
+    public void getCurrentLocation() {
         locationManager = (LocationManager) MainActivity.getContext().getSystemService(Context.LOCATION_SERVICE);
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (Utils.checkWifiConnection(MainActivity.getContext())){
+            isNetworkEnabled = true;
+        }
+
         Log.e("!!!!!INFO", "Entro en getCurrentLocation");
+        //Log.e("!!!!!INFO", "La hora en la que entra es " + getTimeFormatted(System.currentTimeMillis()));
+
         locationListener = new LocationListener() {
             public void onLocationChanged(Location l) {
                 location = l;
@@ -72,9 +84,14 @@ public class DevicePosition {
                 latitude = l.getLatitude();
                 accuracy = l.getAccuracy();
                 time = l.getTime();
-                //showLocation();
-                String loc = Double.toString(longitude) + " - " + Double.toString(latitude) + " - " + Float.toString(accuracy) + " - " + Long.toString(time);
+
+                showLocation();
+
+                String loc = Double.toString(longitude) + " - " + Double.toString(latitude) + " - " + Float.toString(accuracy) + " - " + getTimeFormatted(time);
                 Log.e("!!!INFO", loc);
+
+                SendPositionToServerTask sendPositionToServerTask = new SendPositionToServerTask();
+                sendPositionToServerTask.execute(createJSONLocation());
             }
 
             public void onProviderDisabled(String provider) {
@@ -86,37 +103,41 @@ public class DevicePosition {
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
         };
-        Log.e("!!!INFO", "El valor de refresco es " + Long.toString(minTime));
 
-        //If GPS is enabled
-        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (isGPSEnabled)
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, 0, locationListener);
-        //If Network is enabled
-        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         if (isNetworkEnabled)
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, 0, locationListener);
-        Log.e("!!!INFO", "GPS enabled? " + Boolean.toString(isGPSEnabled) + " Network enabled? " + Boolean.toString(isNetworkEnabled));
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TimeUnit.MINUTES.toMillis(2), 0, locationListener);
+        if (isGPSEnabled)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, TimeUnit.MINUTES.toMillis(2), 0, locationListener);
 
     }
 
-    private static class SendPositionToServerTask extends AsyncTask<JSONObject, Void, Void> {
+    private class SendPositionToServerTask extends AsyncTask<JSONObject, Void, Void> {
         @Override
         protected Void doInBackground(JSONObject... jsonObjs) {
-            Log.d("!!!INFO", "Entro por SendPositionToServer task");
+            Log.e("!!!INFO", "SendPositionToServer task");
             ClientResource resource = new ClientResource("http://locamo.no-ip.org:8284/users/" + user);
             Representation obj = new JsonRepresentation(jsonObjs[0]);
             resource.put(obj);
-
+            Log.e("!!!INFO", "PUT sent with the position");
             return null;
         }
     }
 
-    public static void showLocation(){
-        MainActivity.tv_longitude.setText("Longitude: " + longitude);
-        MainActivity.tv_latitude.setText("Latitude: " + latitude);
-        MainActivity.tv_accuracy.setText("Accuracy: " + accuracy);
-        MainActivity.tv_date.setText("Date: " + MainActivity.getTimeFormatted(time));
+    private void showLocation(){
+        MainActivity.tv_longitude.setText("Longitude: " + location.getLongitude());
+        MainActivity.tv_latitude.setText("Latitude: " + location.getLatitude());
+        MainActivity.tv_accuracy.setText("Accuracy: " + location.getAccuracy());
+        MainActivity.tv_date.setText("Date: " + DevicePosition.getTimeFormatted(location.getTime()));
+    }
+
+    public static String getTimeFormatted(long x){
+        Date d = new Date(x);
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        return format.format(d);
+    }
+
+    public Location getLocation(){
+        return location;
     }
 }
 
