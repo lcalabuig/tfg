@@ -10,6 +10,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +32,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import upv.locamo.tfg.smarthome.app.MainActivity;
+import upv.locamo.tfg.smarthome.app.R;
 import upv.locamo.tfg.smarthome.app.utils.Utils;
 
 public class DevicePosition {
@@ -35,16 +44,15 @@ public class DevicePosition {
     public static double latitude;
     public static float accuracy;
     public static long time;
+    private LatLng CURRENT_LOCATION;
+    private Marker currentPositionMarker = null;
 
-    private double minTime = TimeUnit.MINUTES.toMillis(2);
+    private long minTime = TimeUnit.MINUTES.toMillis(2);
 
     // flag for GPS status
     static boolean isGPSEnabled = false;
     // flag for network status
     static boolean isNetworkEnabled = false;
-
-    private static String user = Utils.getUser(MainActivity.getContext());
-
 
 
     private JSONObject createJSONLocation() {
@@ -75,7 +83,6 @@ public class DevicePosition {
         }
 
         Log.e("!!!!!INFO", "Entro en getCurrentLocation");
-        //Log.e("!!!!!INFO", "La hora en la que entra es " + getTimeFormatted(System.currentTimeMillis()));
 
         locationListener = new LocationListener() {
             public void onLocationChanged(Location l) {
@@ -103,11 +110,12 @@ public class DevicePosition {
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
         };
-
-        if (isNetworkEnabled)
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TimeUnit.MINUTES.toMillis(2), 0, locationListener);
         if (isGPSEnabled)
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, TimeUnit.MINUTES.toMillis(2), 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, 0, locationListener);
+        else if (isNetworkEnabled)
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, 0, locationListener);
+        else
+            Toast.makeText(MainActivity.getContext(), "Please enable GPS", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -115,7 +123,7 @@ public class DevicePosition {
         @Override
         protected Void doInBackground(JSONObject... jsonObjs) {
             Log.e("!!!INFO", "SendPositionToServer task");
-            ClientResource resource = new ClientResource("http://locamo.no-ip.org:8284/users/" + user);
+            ClientResource resource = new ClientResource("http://locamo.no-ip.org:8284/users/" + MainActivity.getUser());
             Representation obj = new JsonRepresentation(jsonObjs[0]);
             resource.put(obj);
             Log.e("!!!INFO", "PUT sent with the position");
@@ -124,10 +132,24 @@ public class DevicePosition {
     }
 
     private void showLocation(){
-        MainActivity.tv_longitude.setText("Longitude: " + location.getLongitude());
-        MainActivity.tv_latitude.setText("Latitude: " + location.getLatitude());
-        MainActivity.tv_accuracy.setText("Accuracy: " + location.getAccuracy());
-        MainActivity.tv_date.setText("Date: " + DevicePosition.getTimeFormatted(location.getTime()));
+        if (location != null){
+            CURRENT_LOCATION = new LatLng(location.getLatitude(), location.getLongitude());
+
+            CameraPosition cameraCurrentPosition = new CameraPosition.Builder()
+                    .target(CURRENT_LOCATION)   // Center map at home
+                    .zoom(17)                   // Zoom
+                    .build();
+            CameraUpdate cameraUpdateCurrentPosition =
+                    CameraUpdateFactory.newCameraPosition(cameraCurrentPosition);
+
+            MainActivity.map.animateCamera(cameraUpdateCurrentPosition);
+
+            if (currentPositionMarker != null)
+                currentPositionMarker.remove();
+            currentPositionMarker = MainActivity.map.addMarker(new MarkerOptions()
+                    .position(CURRENT_LOCATION)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.position)));
+        }
     }
 
     public static String getTimeFormatted(long x){

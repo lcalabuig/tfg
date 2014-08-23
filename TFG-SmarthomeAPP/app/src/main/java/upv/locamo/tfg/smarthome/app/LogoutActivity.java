@@ -17,10 +17,14 @@ public class LogoutActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Delete the current user from the Shared Preferences
-        Utils.deleteCurrentUser(getApplicationContext());
+        Utils.deleteCurrentUser(MainActivity.getContext());
 
-        Intent menuActivity = new Intent(LogoutActivity.this, MenuActivity.class);
+        Intent menuActivity = new Intent(this, MenuActivity.class);
+        menuActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                Intent.FLAG_ACTIVITY_CLEAR_TASK |
+                Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(menuActivity);
+        finish();
 
     }
 

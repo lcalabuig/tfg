@@ -74,6 +74,7 @@
     <orderEntry type="library" exported="" name="org.restlet.ext.nio" level="project" />
     <orderEntry type="library" exported="" name="support-v4-19.1.0" level="project" />
     <orderEntry type="library" exported="" name="org.restlet" level="project" />
+    <orderEntry type="library" exported="" name="play-services-3.2.25" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-19.1.0" level="project" />
     <orderEntry type="library" exported="" name="gridlayout-v7-19.1.0" level="project" />
   </component>

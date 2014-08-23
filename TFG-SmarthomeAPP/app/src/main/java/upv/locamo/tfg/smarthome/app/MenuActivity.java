@@ -30,11 +30,13 @@ public class MenuActivity extends ActionBarActivity {
 
         btn_start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
                 if (getUser().equals("user")) {
                     Intent loginActivity = new Intent(MenuActivity.this, LoginActivity.class);
                     startActivity(loginActivity);
                 }
                 else {
+
                     Intent mainActivity = new Intent(MenuActivity.this, MainActivity.class);
                     startActivity(mainActivity);
                 }
