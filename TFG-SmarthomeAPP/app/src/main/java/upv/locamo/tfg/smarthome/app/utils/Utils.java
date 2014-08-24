@@ -4,18 +4,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 public class Utils {
 
     private static SharedPreferences prefs;
     private static SharedPreferences.Editor editor;
     private static String user;
+    private static ArrayList<String> shoppingList;
 
     public static String getUser(){
         return user;

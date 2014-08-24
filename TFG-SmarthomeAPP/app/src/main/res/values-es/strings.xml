@@ -16,6 +16,10 @@
     <string name="gps">Por favor, activa el GPS</string>
     <string name="home">Casa</string>
 
+    <!-- Strings for ShoppingListActivity -->
+    <string name="addItem">Añadir</string>
+    <string name="shoppingList">Lista de la compra</string>
+
     <!-- Strings for Login/LogoutActivity -->
     <string name="title_activity_login">Registro</string>
     <string name="username">Nombre de usuario</string>

@@ -18,6 +18,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,9 +31,15 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import upv.locamo.tfg.smarthome.app.MainActivity;
@@ -46,6 +57,7 @@ public class DevicePosition {
     public static long time;
     private LatLng CURRENT_LOCATION;
     private Marker currentPositionMarker = null;
+    private JSONObject jsonResult;
 
     private long minTime = TimeUnit.MINUTES.toMillis(2);
 
@@ -99,6 +111,12 @@ public class DevicePosition {
 
                 SendPositionToServerTask sendPositionToServerTask = new SendPositionToServerTask();
                 sendPositionToServerTask.execute(createJSONLocation());
+                SmarthomeShoppingList shoppingList = new SmarthomeShoppingList();
+                if (shoppingList.getShoppingList() != null) {
+                    showSupermarkets();
+                }
+                else
+                    Log.e("!!!INFO", "Según la comprobación, la lista es null cuando no lo es");
             }
 
             public void onProviderDisabled(String provider) {
@@ -150,6 +168,124 @@ public class DevicePosition {
                     .position(CURRENT_LOCATION)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.position)));
         }
+    }
+
+    private void showSupermarkets(){
+        GooglePlacesTask webServiceTask = new GooglePlacesTask();
+        try {
+            jsonResult = webServiceTask.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        try {
+            JSONObject result, geometry, location;
+            if (jsonResult != null) {
+                JSONArray jsonArray = jsonResult.getJSONArray("results");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    result = (JSONObject) jsonArray.get(i);
+                    geometry = result.getJSONObject("geometry");
+                    location = geometry.getJSONObject("location");
+                    Marker supermarket = MainActivity.map.addMarker(new MarkerOptions()
+                            .position(new LatLng(location.getDouble("lat"), location.getDouble("lng")))
+                            .title(result.getString("name"))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.shopping_cart)));
+                }
+                createNotification();
+            }
+
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * AsyncTask for obtain the nearby supermarkets
+     */
+    public class GooglePlacesTask extends AsyncTask<Void, Void, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(Void... params) {
+            InputStream is = null;
+            JSONObject jObj = null;
+            String json = "";
+            // Making HTTP request
+            try {
+                String url = "https://maps.googleapis.com/maps/api/place/search/json" +
+                        "?types=grocery_or_supermarket" +
+                        "&location=" + location.getLatitude() + "," + location.getLongitude() +
+                        "&radius=300" +
+                        "&sensor=false" +
+                        "&key=AIzaSyBwHLscORtSkd_ypEQctkZGizj_rsMNe5U";
+
+                DefaultHttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(url);
+                HttpResponse httpResponse = httpClient.execute(httpGet);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                is = httpEntity.getContent();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                is.close();
+                json = sb.toString();
+            } catch (Exception e) {
+                Log.e("Buffer Error", "Error converting result " + e.toString());
+            }
+            try {
+                if (new JSONObject(json).getString("status").equals("OK"))
+                    jObj = new JSONObject(json);
+            } catch (JSONException e) {
+                Log.e("JSON Parser", "Error parsing data " + e.toString());
+            }
+            return jObj;
+        }
+
+    }
+
+    private void createNotification(){
+        /*
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!");
+// Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, ResultActivity.class);
+
+// The stack builder object will contain an artificial back stack for the
+// started Activity.
+// This ensures that navigating backward from the Activity leads out of
+// your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+// Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(ResultActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+// mId allows you to update the notification later on.
+        mNotificationManager.notify(mId, mBuilder.build());
+        */
     }
 
     public static String getTimeFormatted(long x){

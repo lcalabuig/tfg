@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import upv.locamo.tfg.smarthome.app.utils.Utils;
+
 
 public class MenuActivity extends ActionBarActivity {
 
@@ -28,20 +30,26 @@ public class MenuActivity extends ActionBarActivity {
         btn_start = (Button) findViewById(R.id.btn_start);
         btn_exit = (Button) findViewById(R.id.btn_exit);
 
+        // Start application
         btn_start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                if (getUser().equals("user")) {
+                // If the user is not logged in to the application
+                if (Utils.getUser(getApplicationContext()).equals("user")) {
                     Intent loginActivity = new Intent(MenuActivity.this, LoginActivity.class);
                     startActivity(loginActivity);
                 }
                 else {
-
                     Intent mainActivity = new Intent(MenuActivity.this, MainActivity.class);
                     startActivity(mainActivity);
                 }
+                /*
+                Intent placesActivity = new Intent(MenuActivity.this, ExamplePlacesActivity.class);
+                startActivity(placesActivity);*/
             }
         });
+
+        // Exit
         btn_exit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
@@ -59,9 +67,10 @@ public class MenuActivity extends ActionBarActivity {
         return true;
     }
 
+    /**
+     * Adds shortcut for the application on home screen
+     */
     private void addShortcut() {
-        //Adding shortcut for MainActivity
-        //on Home screen
 
         appPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         isAppInstalled = appPreferences.getBoolean("isAppInstalled",false);
@@ -104,9 +113,4 @@ public class MenuActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    private String getUser(){
-        SharedPreferences prefs = getSharedPreferences("tfg_preferences", MODE_PRIVATE);
-        return prefs.getString("username", "user");
-    }
 }

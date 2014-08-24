@@ -48,8 +48,8 @@ public class MainActivity extends FragmentActivity {
 
         user = Utils.getUser(context);
         //Obtain the IP and send it to the Rest Server
-        sendIPtoServer();
-        Log.i("INFO", "IP: " + ip);
+        //sendIPtoServer();
+        //Log.i("INFO", "IP: " + ip);
 
         getCurrentLocation();
 
@@ -103,6 +103,10 @@ public class MainActivity extends FragmentActivity {
                     Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(logoutActivity);
             finish();
+        }
+        if (id == R.id.shoppingList) {
+            Intent shoppingListActivity = new Intent(MainActivity.this, ShoppingListActivity.class);
+            startActivity(shoppingListActivity);
         }
         return super.onOptionsItemSelected(item);
 

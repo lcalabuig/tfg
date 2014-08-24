@@ -112,10 +112,6 @@ public class DeviceIP {
             try {
                 if (json.getString("ip") != null)
                     localIP = json.getString("ip");
-                else {
-                    localIP = null;
-                    Toast.makeText(MainActivity.getContext(), "You don't have good Internet connection", Toast.LENGTH_SHORT).show();
-                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
