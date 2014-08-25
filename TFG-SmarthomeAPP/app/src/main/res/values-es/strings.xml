@@ -19,6 +19,7 @@
     <!-- Strings for ShoppingListActivity -->
     <string name="addItem">Añadir</string>
     <string name="shoppingList">Lista de la compra</string>
+    <string name="notification">Hay supermercados cercanos</string>
 
     <!-- Strings for Login/LogoutActivity -->
     <string name="title_activity_login">Registro</string>

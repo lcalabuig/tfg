@@ -24,6 +24,7 @@
     <!-- Strings for ShoppingListActivity -->
     <string name="addItem">Add</string>
     <string name="shoppingList">Shopping list</string>
+    <string name="notification">There are supermarkets nearby</string>
 
     <!-- Strings for AboutUsActivity -->
     <string name="about">About us</string>

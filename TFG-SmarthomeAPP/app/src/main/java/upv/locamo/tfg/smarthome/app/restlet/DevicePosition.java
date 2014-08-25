@@ -1,12 +1,20 @@
 package upv.locamo.tfg.smarthome.app.restlet;
 
 //JSON object
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -58,6 +66,7 @@ public class DevicePosition {
     private LatLng CURRENT_LOCATION;
     private Marker currentPositionMarker = null;
     private JSONObject jsonResult;
+    private int notificationID = 1;
 
     private long minTime = TimeUnit.MINUTES.toMillis(2);
 
@@ -111,12 +120,11 @@ public class DevicePosition {
 
                 SendPositionToServerTask sendPositionToServerTask = new SendPositionToServerTask();
                 sendPositionToServerTask.execute(createJSONLocation());
+
                 SmarthomeShoppingList shoppingList = new SmarthomeShoppingList();
-                if (shoppingList.getShoppingList() != null) {
+                if (shoppingList.getShoppingList().size() != 0) {
                     showSupermarkets();
                 }
-                else
-                    Log.e("!!!INFO", "Según la comprobación, la lista es null cuando no lo es");
             }
 
             public void onProviderDisabled(String provider) {
@@ -201,6 +209,7 @@ public class DevicePosition {
 
     }
 
+
     /**
      * AsyncTask for obtain the nearby supermarkets
      */
@@ -257,23 +266,25 @@ public class DevicePosition {
     }
 
     private void createNotification(){
-        /*
+        Vibrator v = (Vibrator) MainActivity.getContext().getSystemService(Context.VIBRATOR_SERVICE);
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.notification_icon)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
-// Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, ResultActivity.class);
+                new NotificationCompat.Builder(MainActivity.getContext())
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle(MainActivity.getContext().getResources().getString(R.string.app_name))
+                        .setContentText(MainActivity.getContext().getResources().getString(R.string.notification));
+        //mBuilder.setVibrate(new long[] {300}); // Doesn't work
+        v.vibrate(300);
+        mBuilder.setLights(Color.WHITE, 800, 800);
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(MainActivity.getContext(), MainActivity.class);
 
-// The stack builder object will contain an artificial back stack for the
-// started Activity.
-// This ensures that navigating backward from the Activity leads out of
-// your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-// Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(ResultActivity.class);
-// Adds the Intent that starts the Activity to the top of the stack
+        // The stack builder object will contain an artificial back stack for the started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.getContext());
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
@@ -282,10 +293,10 @@ public class DevicePosition {
                 );
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
-        mNotificationManager.notify(mId, mBuilder.build());
-        */
+                (NotificationManager) MainActivity.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(notificationID, mBuilder.build());
+
     }
 
     public static String getTimeFormatted(long x){

@@ -33,7 +33,6 @@ public class MenuActivity extends ActionBarActivity {
         // Start application
         btn_start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 // If the user is not logged in to the application
                 if (Utils.getUser(getApplicationContext()).equals("user")) {
                     Intent loginActivity = new Intent(MenuActivity.this, LoginActivity.class);
@@ -43,9 +42,6 @@ public class MenuActivity extends ActionBarActivity {
                     Intent mainActivity = new Intent(MenuActivity.this, MainActivity.class);
                     startActivity(mainActivity);
                 }
-                /*
-                Intent placesActivity = new Intent(MenuActivity.this, ExamplePlacesActivity.class);
-                startActivity(placesActivity);*/
             }
         });
 
