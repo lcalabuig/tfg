@@ -1,14 +1,11 @@
 package upv.locamo.tfg.client;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.Method;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-
-import upv.locamo.tfg.smarthome.logic.Distance;
 
 
 
@@ -18,11 +15,21 @@ public class ProbarCosas {
 	static String url;
 	static String port;
 	static float time;
-	
-	
-	@SuppressWarnings("unused")
+
+
 	public static void main (String[] args) throws Exception{
 		
+		Date date = new Date(System.currentTimeMillis());
+		//System.out.println(date.get);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		System.out.println(calendar.get(Calendar.DAY_OF_MONTH));
+		System.out.println(calendar.get(Calendar.MONTH));
+		System.out.println(calendar.get(Calendar.YEAR));
+		
+		
+		
+		/*
 		System.out.println(urlComplete);
 		doSomething();
 		System.out.println(url);
@@ -30,6 +37,7 @@ public class ProbarCosas {
 		
 		System.out.println(Distance.home.getLongitude());
 		System.out.println(Distance.home.getLatitude());
+		*/
 		/*
 		JSONObject json = createJSONArray();
 
@@ -37,6 +45,7 @@ public class ProbarCosas {
 		Representation representation = new JsonRepresentation(json);
 		resource.put(representation);
 		*/
+/*
 		ClientResource clientResource = new ClientResource("http://localhost:8284/shoppingList");
 		Representation rep = clientResource.get();
 		JSONObject jsonRep = (new JsonRepresentation(rep)).getJsonObject();
@@ -51,7 +60,7 @@ public class ProbarCosas {
         jsonRep2.put("shopping_list", jsonArray2);
         Representation rep2 = new JsonRepresentation(jsonRep2);
         clientResource.put(rep2);
-        
+        */
         //ClientResource clientResource2 = new ClientResource("http://localhost:8284/shoppingList/perejil");
         //clientResource2.delete();
         

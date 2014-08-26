@@ -12,62 +12,62 @@ import org.restlet.resource.ClientResource;
 
 import upv.locamo.tfg.smarthome.server.ServerComponent;
 
-public class Rules {
+public class CopyOfRules {
 	
 	/*
 	 * Some resources of smarthome
 	 */
 	
 	// Lightning - togglebistate functionality
-	private String LIGHTS_KITCHEN_CENTRAL = "DF-CUINA.IL.CENTRAL";
-	private String LIGHTS_KITCHEN_AUXILIARY = "DF-CUINA.IL.AUXILIAR";
-	private String LIGHTS_KITCHEN_HOB = "DF-CUINA.IL.BANCADA";
-	private String LIGHTS_DININGROOM_CENTRAL = "DF-MENJ.IL.CENTRAL";
-	private String LIGHTS_DININGROOM_AUXILIARY = "DF-MENJ.IL.AUXILIAR";
-	private String LIGHTS_ROOM1_CENTRAL = "DF-HAB1.IL.CENTRAL";
-	private String LIGHTS_ROOM2_CENTRAL = "DF-HAB2.IL.CENTRAL";
-	private String LIGHTS_ROOM3_CENTRAL = "DF-HAB3.IL.CENTRAL";
+	String LIGHTS_KITCHEN_CENTRAL = "DF-CUINA.IL.CENTRAL";
+	String LIGHTS_KITCHEN_AUXILIARY = "DF-CUINA.IL.AUXILIAR";
+	String LIGHTS_KITCHEN_HOB = "DF-CUINA.IL.BANCADA";
+	String LIGHTS_DININGROOM_CENTRAL = "DF-MENJ.IL.CENTRAL";
+	String LIGHTS_DININGROOM_AUXILIARY = "DF-MENJ.IL.AUXILIAR";
+	String LIGHTS_ROOM1_CENTRAL = "DF-HAB1.IL.CENTRAL";
+	String LIGHTS_ROOM2_CENTRAL = "DF-HAB2.IL.CENTRAL";
+	String LIGHTS_ROOM3_CENTRAL = "DF-HAB3.IL.CENTRAL";
 
 	// Blinds - movement functionality
-	private String BLINDS_DININGROOM_12 = "DF-MENJ.FINESTRA.PERSIANES12";
-	private String BLINDS_DININGROOM_34 = "DF-MENJ.FINESTRA.PERSIANES34";
-	private String BLINDS_DININGROOM_5 = "DF-MENJ.FINESTRA.PERSIANA5";
-	private String BLINDS_DININGROOM_ALL = "DF-MENJ.FINESTRA.PERSIANES";
-	private String BLINDS_ROOM1 = "DF-HAB1.FINESTRA.PERSIANA";
-	private String BLINDS_ROOM1_STOR = "DF-HAB1.FINESTRA.ESTOR";
-	private String BLINDS_ROOM2 = "DF-HAB2.FINESTRA.PERSIANA";
-	private String BLINDS_ROOM3 = "DF-HAB3.FINESTRA.PERSIANA";
-	private String BLINDS_ROOM3_STOR = "DF-HAB3.FINESTRA.ESTOR";
+	String BLINDS_DININGROOM_12 = "DF-MENJ.FINESTRA.PERSIANES12";
+	String BLINDS_DININGROOM_34 = "DF-MENJ.FINESTRA.PERSIANES34";
+	String BLINDS_DININGROOM_5 = "DF-MENJ.FINESTRA.PERSIANA5";
+	String BLINDS_DININGROOM_ALL = "DF-MENJ.FINESTRA.PERSIANES";
+	String BLINDS_ROOM1 = "DF-HAB1.FINESTRA.PERSIANA";
+	String BLINDS_ROOM1_STOR = "DF-HAB1.FINESTRA.ESTOR";
+	String BLINDS_ROOM2 = "DF-HAB2.FINESTRA.PERSIANA";
+	String BLINDS_ROOM3 = "DF-HAB3.FINESTRA.PERSIANA";
+	String BLINDS_ROOM3_STOR = "DF-HAB3.FINESTRA.ESTOR";
 
 	// Heating - togglebistate functionality
-	private String HEATER_ROOM1 = "DF-HAB1.CL.CALEFACTOR";
-	private String HEATER_ROOM2 = "DF-HAB2.CL.CALEFACTOR";
-	private String HEATER_ROOM3 = "DF-HAB3.CL.CALEFACTOR";
-	private String HEATER_CBATHROOM = "DF-BC.CL.CALEFACTOR";
-	private String HEATER_DBATHROOM = "DF-BM.CL.CALEFACTOR";
+	String HEATER_ROOM1 = "DF-HAB1.CL.CALEFACTOR";
+	String HEATER_ROOM2 = "DF-HAB2.CL.CALEFACTOR";
+	String HEATER_ROOM3 = "DF-HAB3.CL.CALEFACTOR";
+	String HEATER_CBATHROOM = "DF-BC.CL.CALEFACTOR";
+	String HEATER_DBATHROOM = "DF-BM.CL.CALEFACTOR";
 
 	// Air conditioner - togglebistate functionality
-	private String AIRCOND_DININGROOM = "DF-MENJ.CL.AC";
-	private String AIRCOND_ROOM1 = "DF-HAB1.CL.AC";
-	private String AIRCOND_ROOM3 = "DF-HAB3.CL.AC";
+	String AIRCOND_DININGROOM = "DF-MENJ.CL.AC";
+	String AIRCOND_ROOM1 = "DF-HAB1.CL.AC";
+	String AIRCOND_ROOM3 = "DF-HAB3.CL.AC";
 
 	// Sensors - bitstate functionality
-	private String SENSOR_MOVEMENT = "DF-ENT.SE.DETMOV.SENSOR";
-	private String SENSOR_CLOSEDOOR = "DF-PORTA.SENSOR.TANCADA";
+	String SENSOR_MOVEMENT = "DF-ENT.SE.DETMOV.SENSOR";
+	String SENSOR_CLOSEDOOR = "DF-PORTA.SENSOR.TANCADA";
 
 	/*
 	 * Actions than can be made over the above resources
 	 */
 	
-	private String ENABLE = "biaON";
-	private String DISABLE = "biaOFF";
-	private String OPEN = "movaOPEN";
-	private String CLOSE = "movaCLOSE";
+	String ENABLE = "biaON";
+	String DISABLE = "biaOFF";
+	String OPEN = "movaOPEN";
+	String CLOSE = "movaCLOSE";
 	
 	/**
 	 * Rule that is activated when the user moves away 200 or more meters home
 	 */
-	public void twoHundredMetersMovingAwayRule () {		
+	public void levelOneMovingAwayRule () {		
 
 		sendActionToServer(LIGHTS_KITCHEN_AUXILIARY, ENABLE);
 		sendActionToServer(LIGHTS_DININGROOM_AUXILIARY, ENABLE);
@@ -89,7 +89,7 @@ public class Rules {
 	/**
 	 * Rule that is activated when the user approaches 200 or more meters home
 	 */
-	public void twoHundredMetersApproachingRule () {
+	public void levelOneApproachingRule () {
 		
 		sendActionToServer(LIGHTS_KITCHEN_AUXILIARY, ENABLE);
 		sendActionToServer(LIGHTS_DININGROOM_AUXILIARY, ENABLE);
@@ -97,9 +97,9 @@ public class Rules {
 	}
 	
 	/**
-	 * Rule that is activated when the user moves away 500 or more meters home
+	 * Rule that is activated when the user moves away 200 or more meters home
 	 */
-	public void fiveHundredMetersMovingAwayRule (Date date) {
+	public void levelTwoMovingAwayRule (Date date) {
 
 		// Down blinds only if we are in the months of May to October
 		if (getMonth(date) >= 5 && getMonth(date) <= 10 ){
@@ -127,7 +127,7 @@ public class Rules {
 	/**
 	 * Rule that is activated when the user approaches 500 or more meters home
 	 */
-	public void fiveHundredMetersApproachingRule (Date date) {
+	public void levelTwoApproachingRule (Date date) {
 
 		// Down blinds only if we are in the months of November to April
 		if (getMonth(date) <= 4 && getMonth(date) >= 11 ){
@@ -147,7 +147,7 @@ public class Rules {
 	 * 
 	 * or when the user is a long time away from home
 	 */
-	public void oneThousandMetersMovingAwayRule (Date date) {
+	public void levelThreeMovingAwayRule (Date date) {
 
 		// Turn off air conditioner only if we are in the months of June to September
 		if (getMonth(date) >= 6 && getMonth(date) <= 9){
@@ -168,7 +168,7 @@ public class Rules {
 	/**
 	 * Rule that is activated when the user approaches 1000 or more meters home
 	 */
-	public void oneThousandMetersApproachingRule (Date date) {
+	public void levelThreeApproachingRule (Date date) {
 
 		// Turn on air conditioner only if we are in the months of June to September
 		if (getMonth(date) >= 6 && getMonth(date) <= 9){
@@ -193,7 +193,7 @@ public class Rules {
 	 */
 	private void sendActionToServer (String resource, String action) {
 		ClientResource clientResource = new ClientResource(
-				ServerComponent.getSmartHomeURL() + "/devFunc/" + resource);
+				"http://localhost:8182/devFunc/" + resource);
 		try {
 			JSONObject jsonSend = new JSONObject();
 			jsonSend.put("action", action);

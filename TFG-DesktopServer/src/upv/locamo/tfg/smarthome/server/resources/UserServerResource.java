@@ -22,10 +22,8 @@ public class UserServerResource extends ServerResource {
 	private String userID;
 
 	/**
-	 * This method gets the user by the URL
-	 * Example:
-	 *     URL: http://localhost/users/locamo
-	 *     user = locamo
+	 * This method gets the user by the URL Example: URL:
+	 * http://localhost/users/locamo user = locamo
 	 */
 	@Override
 	protected void doInit() throws ResourceException {
@@ -34,8 +32,7 @@ public class UserServerResource extends ServerResource {
 	}
 
 	/**
-	 * Method GET
-	 * Returns information of a determinate user
+	 * Method GET Returns information of a determinate user
 	 */
 	@Override
 	protected Representation get() throws ResourceException {
@@ -58,9 +55,8 @@ public class UserServerResource extends ServerResource {
 	}
 
 	/**
-	 * Method PUT
-	 * Option 1: Insert/Change the IP of a determinate user
-	 * Option 2: Insert the location of a determinate user
+	 * Method PUT Option 1: Insert/Change the IP of a determinate user Option 2:
+	 * Insert the location of a determinate user
 	 */
 	@Override
 	protected Representation put(Representation representation)
@@ -87,9 +83,11 @@ public class UserServerResource extends ServerResource {
 				// jsonArray = json.getJSONArray("location");
 				SmartHomeUser user = new SmartHomeUser(userID, ip,
 						UsersServerResource.getLocationListByUser(userID));
-				
-				// Add the location sent to the locations list and calculate distance
-				addLocationToList(user, jsonArray);			
+
+				// Add the location sent to the locations list and calculate
+				// distance
+				Distance dist = addLocationToList(user, jsonArray);
+				Distance.applyRulesAccordingDistance(dist);
 
 				return new JsonRepresentation(new SmartHomeUser(userID, ip,
 						user.getLocationList()).getJSONUser());
@@ -103,8 +101,7 @@ public class UserServerResource extends ServerResource {
 	}
 
 	/**
-	 * Method DELETE
-	 * Deletes a determinate user
+	 * Method DELETE Deletes a determinate user
 	 */
 	@Override
 	protected Representation delete() throws ResourceException {
@@ -130,39 +127,45 @@ public class UserServerResource extends ServerResource {
 	}
 
 	/**
-	 * Insert location received into location list
+	 * Inserts location received into location list and calculates distance
+	 * between location and home
+	 * 
 	 * @param jsonArray
-	 * @return location added
+	 * @return calculated distance
 	 */
-	public void addLocationToList(SmartHomeUser user, JSONArray jsonArray) {
+	public Distance addLocationToList(SmartHomeUser user, JSONArray jsonArray) {
 		Location loc = null;
+		Distance dist = null;
 		try {
 			if (jsonArray != null) {
-				for (int i = 0; i < jsonArray.length(); i++) {
-					loc = jsonToLocation((JSONObject) jsonArray.get(i));
-					if (!UsersServerResource.ifUserHaveLocation(userID, loc)) {
-						user.addLocation(loc);
-						System.out.println(loc.getAccuracy());
-						// Calculate distance between location received and home
-						calculateDistance(loc);
-					}
+				loc = jsonToLocation((JSONObject) jsonArray.get(0));
+				if (!UsersServerResource.ifUserHaveLocation(userID, loc)) {
+					user.addLocation(loc);
+					System.out.println(loc.getAccuracy());
+					// Calculate distance between location received and home
+					double distance = Distance.calculateDistance(loc.getLongitude(),
+							loc.getLatitude());
+					dist = new Distance(distance, loc.getAccuracy(), loc.getDate());
+					Distance.addDistance(dist);
 				}
+
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		return dist;
 	}
 
 	/**
 	 * Creates a new Location object from a JSONObject
+	 * 
 	 * @param JSONObject
 	 * @return location
 	 */
 	public static Location jsonToLocation(JSONObject json) {
 		try {
 			Location l = new Location(json.getDouble("longitude"),
-					json.getDouble("latitude"),
-					json.getLong("time"),
+					json.getDouble("latitude"), json.getLong("time"),
 					json.getInt("accuracy"));
 			return l;
 		} catch (JSONException e) {
@@ -172,15 +175,4 @@ public class UserServerResource extends ServerResource {
 
 	}
 	
-	/**
-	 * Calculates and adds to list the distance between home and the location
-	 * @param location
-	 */
-	public void calculateDistance(Location loc){
-			double distance = Distance.calculateDistance(
-					loc.getLongitude(), loc.getLatitude());
-			Distance dist = new Distance(distance, loc.getAccuracy(), loc.getDate());
-			System.out.println(dist.getDistance());
-			Distance.addDistance(dist);		
-	}
 }
