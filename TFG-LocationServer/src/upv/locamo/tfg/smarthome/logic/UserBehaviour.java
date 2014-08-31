@@ -1,46 +1,13 @@
 package upv.locamo.tfg.smarthome.logic;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-public class Distance {
-
-	// Location of home
-	public static Location home = new Location(-0.6591402085289246,
-			38.71733000907843);
+public class UserBehaviour {
 
 	private static ArrayList<Distance> distances = new ArrayList<Distance>();
+
 	private static ArrayList<String> actions = new ArrayList<String>();
-
-	private double distance;
-	private float accuracy;
-	private Date date;
-
-	/**
-	 * Constructor
-	 * 
-	 * @param distance
-	 * @param accuracy
-	 * @param date
-	 */
-	public Distance(double distance, float accuracy, Date date) {
-		this.distance = distance;
-		this.accuracy = accuracy;
-		this.date = date;
-	}
-
-	public double getDistance() {
-		return distance;
-	}
-
-	public float getAccuracy() {
-		return accuracy;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
+	
 	/**
 	 * Gets the list of distances
 	 * 
@@ -58,27 +25,7 @@ public class Distance {
 	public static void addDistance(Distance distance) {
 		distances.add(distance);
 	}
-
-	/**
-	 * Haversine formula to calculate distance between a location and home
-	 * 
-	 * @param longitude
-	 * @param latitude
-	 * @return distance (in meters)
-	 */
-	public static double calculateDistance(double lon, double lat) {
-		double earthRadius = 6371000; // meters
-		double dLat = Math.toRadians(lat - home.getLatitude());
-		double dLng = Math.toRadians(lon - home.getLongitude());
-		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-				+ Math.cos(Math.toRadians(home.getLatitude()))
-				* Math.cos(Math.toRadians(lat)) * Math.sin(dLng / 2)
-				* Math.sin(dLng / 2);
-		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		float dist = (float) (earthRadius * c);
-		return dist;
-	}
-
+	
 	public static void applyRulesAccordingDistance(Distance dist) {
 
 		Rules rule = new Rules();
@@ -92,7 +39,7 @@ public class Distance {
 		// moving away
 		int sizeAux = 4;
 		int[] aux = new int[sizeAux];
-		int index = Distance.getDistancesList().indexOf(dist);
+		int index = distances.indexOf(dist);
 
 		if (distances.size() != 0 && index >= 4) {
 			for (int i = 4; i >= 0; i--) {
@@ -240,4 +187,5 @@ public class Distance {
 	}
 
 
+	
 }

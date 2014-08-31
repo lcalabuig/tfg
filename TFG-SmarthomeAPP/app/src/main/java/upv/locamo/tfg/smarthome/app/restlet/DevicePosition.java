@@ -97,13 +97,16 @@ public class DevicePosition {
         }
     }
     public void getCurrentLocation() {
+        Log.e("!!!!!INFO", "Entro en getCurrentLocation");
         locationManager = (LocationManager) MainActivity.getContext().getSystemService(Context.LOCATION_SERVICE);
+
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (Utils.checkWifiConnection(MainActivity.getContext())){
             isNetworkEnabled = true;
         }
-
-        Log.e("!!!!!INFO", "Entro en getCurrentLocation");
+        Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        location = loc;
+        showLocation();
 
         locationListener = new LocationListener() {
             public void onLocationChanged(Location l) {
@@ -134,12 +137,17 @@ public class DevicePosition {
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
+                if (provider.equals("NETWORK_PROVIDER"))
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, 0, locationListener);
+                else
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, 0, locationListener);
             }
         };
-        if (isGPSEnabled)
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, 0, locationListener);
-        else if (isNetworkEnabled)
+
+        if (isNetworkEnabled)
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, 0, locationListener);
+        else if (isGPSEnabled)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, 0, locationListener);
         else
             Toast.makeText(MainActivity.getContext(), "Please enable GPS", Toast.LENGTH_SHORT).show();
 
