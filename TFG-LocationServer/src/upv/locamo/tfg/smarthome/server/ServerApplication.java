@@ -16,15 +16,15 @@ public class ServerApplication extends Application{
 	 * Constructor for change the settings
 	 */
 	public ServerApplication() {
-		setName("RESTful Server");
-		setDescription("Example for a basic server for Android IPs");
+		setName("TFG Location Server");
+		setDescription("Server implemented for the development of TFG");
 		setOwner("Lorena Calabuig");
 		setAuthor("locamo");
 	}
 
 	/**
 	 * Factory method called by the framework when the application starts 
-	 * @return Restlet - a string formatted
+	 * @return Restlet
 	 */
 	@Override
 	public Restlet createInboundRoot() {

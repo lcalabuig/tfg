@@ -1,6 +1,6 @@
 package upv.locamo.tfg.smarthome.logic;
 
-import java.io.IOException;
+//import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -13,11 +13,11 @@ import org.restlet.resource.ClientResource;
 import upv.locamo.tfg.smarthome.server.ServerComponent;
 
 public class Rules {
-	
+
 	/*
 	 * Some resources of smarthome
 	 */
-	
+
 	// Lightning - togglebistate functionality
 	private String LIGHTS_KITCHEN_CENTRAL = "DF-CUINA.IL.CENTRAL";
 	private String LIGHTS_KITCHEN_AUXILIARY = "DF-CUINA.IL.AUXILIAR";
@@ -58,22 +58,22 @@ public class Rules {
 	/*
 	 * Actions than can be made over the above resources
 	 */
-	
+
 	private String ENABLE = "biaON";
 	private String DISABLE = "biaOFF";
 	private String OPEN = "movaOPEN";
 	private String CLOSE = "movaCLOSE";
-	
+
 	/**
 	 * Rule that is activated when the user moves away 200 or more meters home
 	 */
-	public void twoHundredMetersMovingAwayRule () {		
+	public void twoHundredMetersMovingAwayRule() {
 
 		System.out.println("Applying rule of 200 meters moving away");
-		
+
 		sendActionToServer(LIGHTS_KITCHEN_AUXILIARY, ENABLE);
 		sendActionToServer(LIGHTS_DININGROOM_AUXILIARY, ENABLE);
-		
+
 		sendActionToServer(LIGHTS_KITCHEN_CENTRAL, DISABLE);
 		sendActionToServer(LIGHTS_KITCHEN_HOB, DISABLE);
 		sendActionToServer(LIGHTS_DININGROOM_CENTRAL, DISABLE);
@@ -82,40 +82,40 @@ public class Rules {
 		sendActionToServer(LIGHTS_ROOM3_CENTRAL, DISABLE);
 		sendActionToServer(HEATER_CBATHROOM, DISABLE);
 		sendActionToServer(HEATER_DBATHROOM, DISABLE);
-		
+
 		sendActionToServer(SENSOR_MOVEMENT, ENABLE);
 		sendActionToServer(SENSOR_CLOSEDOOR, ENABLE);
-		
+
 	}
-	
+
 	/**
 	 * Rule that is activated when the user approaches 200 or more meters home
 	 */
-	public void twoHundredMetersApproachingRule () {
-		
+	public void twoHundredMetersApproachingRule() {
+
 		System.out.println("Applying rule of 200 meters approaching");
-		
+
 		sendActionToServer(LIGHTS_KITCHEN_AUXILIARY, ENABLE);
 		sendActionToServer(LIGHTS_DININGROOM_AUXILIARY, ENABLE);
-		
+
 	}
-	
+
 	/**
 	 * Rule that is activated when the user moves away 500 or more meters home
 	 */
-	public void fiveHundredMetersMovingAwayRule (Date date) {
+	public void fiveHundredMetersMovingAwayRule(Date date) {
 
 		System.out.println("Applying rule of 500 meters moving away");
-		
+
 		// Down blinds only if we are in the months of May to October
-		if (getMonth(date) >= 5 && getMonth(date) <= 10 ){
+		if (getMonth(date) >= 5 && getMonth(date) <= 10) {
 			sendActionToServer(BLINDS_DININGROOM_12, CLOSE);
 			sendActionToServer(BLINDS_DININGROOM_34, CLOSE);
 			sendActionToServer(BLINDS_ROOM1, CLOSE);
 			sendActionToServer(BLINDS_ROOM2, CLOSE);
 			sendActionToServer(BLINDS_ROOM3, CLOSE);
 			// Open that blinds if it is day
-			if (getHour(date) <= 23 && getHour(date) >= 7){
+			if (getHour(date) <= 23 && getHour(date) >= 7) {
 				sendActionToServer(BLINDS_DININGROOM_5, OPEN);
 				sendActionToServer(BLINDS_ROOM1_STOR, OPEN);
 				sendActionToServer(BLINDS_ROOM3_STOR, OPEN);
@@ -127,40 +127,41 @@ public class Rules {
 				sendActionToServer(BLINDS_ROOM3_STOR, CLOSE);
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Rule that is activated when the user approaches 500 or more meters home
 	 */
-	public void fiveHundredMetersApproachingRule (Date date) {
+	public void fiveHundredMetersApproachingRule(Date date) {
 
 		System.out.println("Applying rule of 500 meters approaching");
-		
-		// Down blinds only if we are in the months of November to April
-		if (getMonth(date) <= 4 && getMonth(date) >= 11 ){
+
+		// Open blinds only if we are in the months of November to April
+		if (getMonth(date) <= 4 && getMonth(date) >= 11) {
 			// Open that blinds if it is day
-			if (getHour(date) <= 23 && getHour(date) >= 7){
+			if (getHour(date) <= 23 && getHour(date) >= 7) {
 				sendActionToServer(BLINDS_DININGROOM_ALL, OPEN);
 				sendActionToServer(BLINDS_ROOM1_STOR, OPEN);
 				sendActionToServer(BLINDS_ROOM2, OPEN);
 				sendActionToServer(BLINDS_ROOM3_STOR, OPEN);
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Rule that is activated when the user moves away 1000 or more meters home
 	 * 
 	 * or when the user is a long time away from home
 	 */
-	public void oneThousandMetersMovingAwayRule (Date date) {
+	public void oneThousandMetersMovingAwayRule(Date date) {
 
 		System.out.println("Applying rule of 1000 meters moving away");
-		
-		// Turn off air conditioner only if we are in the months of June to September
-		if (getMonth(date) >= 6 && getMonth(date) <= 9){
+
+		// Turn off air conditioner only if we are in the months of June to
+		// September
+		if (getMonth(date) >= 6 && getMonth(date) <= 9) {
 			sendActionToServer(AIRCOND_DININGROOM, DISABLE);
 			sendActionToServer(AIRCOND_ROOM1, DISABLE);
 			sendActionToServer(AIRCOND_ROOM3, DISABLE);
@@ -172,18 +173,19 @@ public class Rules {
 			sendActionToServer(HEATER_ROOM2, DISABLE);
 			sendActionToServer(HEATER_ROOM3, DISABLE);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Rule that is activated when the user approaches 1000 or more meters home
 	 */
-	public void oneThousandMetersApproachingRule (Date date) {
+	public void oneThousandMetersApproachingRule(Date date) {
 
 		System.out.println("Applying rule of 1000 meters approaching");
-		
-		// Turn on air conditioner only if we are in the months of June to September
-		if (getMonth(date) >= 6 && getMonth(date) <= 9){
+
+		// Turn on air conditioner only if we are in the months of June to
+		// September
+		if (getMonth(date) >= 6 && getMonth(date) <= 9) {
 			sendActionToServer(AIRCOND_DININGROOM, ENABLE);
 			sendActionToServer(AIRCOND_ROOM1, ENABLE);
 			sendActionToServer(AIRCOND_ROOM3, ENABLE);
@@ -195,67 +197,66 @@ public class Rules {
 			sendActionToServer(HEATER_ROOM2, ENABLE);
 			sendActionToServer(HEATER_ROOM3, ENABLE);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Sends to server an action on a given resource
+	 * 
 	 * @param resource
 	 * @param action
 	 */
-	private void sendActionToServer (String resource, String action) {
+	private void sendActionToServer(String resource, String action) {
 		ClientResource clientResource = new ClientResource(
 				ServerComponent.getSmartHomeURL() + "/devFunc/" + resource);
 		try {
 			JSONObject jsonSend = new JSONObject();
 			jsonSend.put("action", action);
-			Representation obj = new JsonRepresentation(jsonSend); 
+			Representation obj = new JsonRepresentation(jsonSend);
 			clientResource.put(obj);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Returns the current state of a given resource of smarthome
+	 * 
 	 * @param resource
 	 * @return current state of the given resource (String)
 	 */
-	private String getResourceCurrentState (String resource){
-		ClientResource clientResource = new ClientResource(
-				ServerComponent.getSmartHomeURL() + "/devFunc/" + resource);
-		try {
-			Representation representation = clientResource.get();
-			JSONObject jsonRep = (new JsonRepresentation(representation)).getJsonObject();
-			return jsonRep.getString("current-state");
-		} catch (JSONException | IOException e){
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	
+	/*
+	 * private String getResourceCurrentState (String resource){ ClientResource
+	 * clientResource = new ClientResource( ServerComponent.getSmartHomeURL() +
+	 * "/devFunc/" + resource); try { Representation representation =
+	 * clientResource.get(); JSONObject jsonRep = (new
+	 * JsonRepresentation(representation)).getJsonObject(); return
+	 * jsonRep.getString("current-state"); } catch (JSONException | IOException
+	 * e){ e.printStackTrace(); return null; } }
+	 */
+
 	/**
 	 * Returns the month of a given date
+	 * 
 	 * @param date
 	 * @return month (int)
 	 */
-	private int getMonth (Date date){
+	private int getMonth(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.get(Calendar.MONTH);
 	}
-	
+
 	/**
 	 * Returns the hour of a given date
+	 * 
 	 * @param date
 	 * @return month (int)
 	 */
-	private int getHour (Date date){
+	private int getHour(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar.get(Calendar.HOUR_OF_DAY);
 	}
-	
 
 }

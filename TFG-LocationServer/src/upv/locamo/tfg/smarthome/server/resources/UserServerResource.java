@@ -24,7 +24,8 @@ public class UserServerResource extends ServerResource {
 
 	/**
 	 * This method gets the user by the URL Example: URL:
-	 * http://localhost/users/locamo user = locamo
+	 * 		http://localhost/users/locamo
+	 * 		user = locamo
 	 */
 	@Override
 	protected void doInit() throws ResourceException {

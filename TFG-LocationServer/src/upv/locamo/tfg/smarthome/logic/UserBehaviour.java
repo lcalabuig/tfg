@@ -164,10 +164,20 @@ public class UserBehaviour {
 						actions.add("1000mMovingAway");
 					}
 			}
+			// If user is at the same location more time,
+			// applay all rules moving away from home
+			else if (countEqualNumbers(aux, 0) == 4) {
+				rule.twoHundredMetersMovingAwayRule();
+				actions.add("200mMovingAway");
+				rule.fiveHundredMetersMovingAwayRule(dist.getDate());
+				actions.add("500mMovingAway");
+				rule.oneThousandMetersMovingAwayRule(dist.getDate());
+				actions.add("1000mMovingAway");
+			}
 		}
-		// If user is more than 2 km home first time that initialize app,
+		// If user is more than 1 km home first time that initialize app,
 		// apply all rules moving away from home
-		else if (distances.size() != 0 && index == 0 && distances.get(index).getDistance() >= 2000) {
+		else if (distances.size() != 0 && index == 0 && distances.get(index).getDistance() >= 1000) {
 			rule.twoHundredMetersMovingAwayRule();
 			actions.add("200mMovingAway");
 			rule.fiveHundredMetersMovingAwayRule(dist.getDate());

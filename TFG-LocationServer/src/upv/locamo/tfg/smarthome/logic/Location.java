@@ -27,12 +27,6 @@ public class Location {
 	}
 	
 	/**
-	 * Generic constructor for Location
-	 */
-	public Location(){
-		new Location(0, 0, 0L, 0);
-	}
-	/**
 	 * Constructor
 	 * @param longitude
 	 * @param latitude
@@ -80,6 +74,7 @@ public class Location {
 	
 	/**
 	 * Creates a JSON object of Location
+	 * 
 	 * @return JSONObject
 	 */
 	public JSONObject getJSONPosition(){

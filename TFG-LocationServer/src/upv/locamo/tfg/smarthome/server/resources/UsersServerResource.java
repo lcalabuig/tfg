@@ -16,13 +16,7 @@ import upv.locamo.tfg.smarthome.logic.Location;
 import upv.locamo.tfg.smarthome.logic.User;
 
 public class UsersServerResource extends ServerResource {
-/*
-	private static ArrayList<SmartHomeUser> users = new ArrayList<SmartHomeUser>(){
-		private static final long serialVersionUID = 1L;
 
-	{add(new SmartHomeUser("locamo", null, new ArrayList<Location>()));
-	 add(new SmartHomeUser("temocas", null, new ArrayList<Location>()));}};
-*/
 	private static ArrayList<User> users = new ArrayList<User>();
 	
 	private String password = "tfg";
@@ -31,6 +25,9 @@ public class UsersServerResource extends ServerResource {
 		return users;
 	}
 	
+	/**
+	 * Method GET: gets the list with all users registered and their locations
+	 */
 	@Override
 	protected Representation get() throws ResourceException {
 
@@ -46,6 +43,9 @@ public class UsersServerResource extends ServerResource {
 		}		
 	}
 	
+	/**
+	 * Method PUT: inserts a new user
+	 */
 	@Override
 	protected Representation put(Representation representation) throws ResourceException {
 		
@@ -53,6 +53,7 @@ public class UsersServerResource extends ServerResource {
 			JSONObject json = (new JsonRepresentation(representation)).getJsonObject();
 			String username = json.getString("userID");
 			String pass = json.getString("pass");
+			// Adds a user only if he/she introduced the correct password
 			if (pass.equals(password)){
 				User user = new User(username, new ArrayList<Location>());
 				getUsers().add(user);
@@ -69,7 +70,12 @@ public class UsersServerResource extends ServerResource {
 				
 	}
 	
-	
+	/**
+	 * Obtains the list with the locations of a specific user
+	 * 
+	 * @param uname
+	 * @return list with locations
+	 */
 	public static ArrayList<Location> getLocationListByUser (String uname){
 		ArrayList<Location> list = new ArrayList<Location>();
 		for (User user : users){
@@ -88,6 +94,12 @@ public class UsersServerResource extends ServerResource {
 		}
 	}
 	*/
+	/**
+	 * Check if an user is already inserted in the list
+	 * 
+	 * @param uname
+	 * @return
+	 */
 	public static boolean contains (String uname){
 		for (User user : users){
 			if (user.getUsername().equals(uname))
@@ -96,6 +108,14 @@ public class UsersServerResource extends ServerResource {
 		return false;
 	}
 	
+	/**
+	 * Adds a Location in the list only if the location received is not
+	 * the same as an already inserted
+	 * 
+	 * @param uname
+	 * @param location
+	 * @return false if location not exists in the list
+	 */
 	public static boolean ifUserHaveLocation(String uname, Location l){
 		ArrayList<Location> list = getLocationListByUser(uname);
 		for (Location loc: list){

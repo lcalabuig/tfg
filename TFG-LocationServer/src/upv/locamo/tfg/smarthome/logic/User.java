@@ -11,11 +11,18 @@ public class User {
 	private String username = "";
 	private ArrayList<Location> locationList = null;
 
+	/**
+	 * Constructor
+	 * @param uname
+	 * @param locationList
+	 */
 	public User(String uname, ArrayList<Location> locationList) {
 		this.username = uname;
 		this.locationList = locationList;
 	}
 
+	// Getters and setters
+	
 	public String getUsername() {
 		return username;
 	}
@@ -32,17 +39,32 @@ public class User {
 		this.locationList = locationList;
 	}
 
+	/**
+	 * Adds a specific location to list
+	 * @param location
+	 */
 	public void addLocation(Location location) {
 		locationList.add(location);
 	}
 
+	/**
+	 * Deletes a specific location from list
+	 * @param location
+	 */
 	public void deleteLocation(Location location) {
 		for (Location l : locationList) {
 			if (l == location)
 				locationList.remove(l);
 		}
 	}
-
+	
+	/**
+	 * This method creates a JSONObject with the name of the user and
+	 * his locations
+	 * 
+	 * @return JSONObject with name and a JSONArray with positions
+	 * @throws JSONException
+	 */
 	public JSONObject getJSONUser() throws JSONException {
 		JSONObject jsonResult = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
